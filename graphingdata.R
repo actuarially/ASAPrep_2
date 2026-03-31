@@ -147,7 +147,39 @@ ggplot(comparison_wide, aes(x = CAN, y = USA)) +
   theme_minimal()
 
 ####Histogram
+#Is one of the most common plots to use
+#Allows us to gain a bigger picture of the shape of a distribution
+#Here is a histogram for CO2 Emissions since 2000
+histogramdata = CO2TrendCat1 |>
+  pivot_longer(cols = -Area, names_to = "Year", values_to = "CO2_Emission") |>
+  group_by(Area) |>
+  summarize(CO2_Emission_Since_2000 = sum(CO2_Emission))
+ggplot(data = histogramdata, aes(x = CO2_Emission_Since_2000)) +
+  geom_histogram()
 
 ####Box Plot
+#Plots summaries of data
+#Plots the center of a distribution (median), the values that mark off the middle half of data (first and third quartiles), and the values that mark of fthe vast majority of the data (ends of whiskers)
+#Here is a boxplot for CO2 Emissions since 2000
+#Notice, we have only changed one line in our R code, switching to geom_boxplot()
+ggplot(data = histogramdata, aes(x = CO2_Emission_Since_2000)) +
+  geom_boxplot()
 
 ####Pie Chart
+#Is a very common way to represent the distribution of a single categorical variable
+#Here is a pie chart for ABW CO2 Emissions since 2000 vs AGO, CAN, and USA
+piechartdata = CO2TrendCat1 |>
+  filter(Area == "ABW" | Area == "AGO" | Area == "CAN" | Area == "USA") |>
+  pivot_longer(cols = -Area, names_to = "Year", values_to = "CO2_Emission") |>
+  group_by(Area) |>
+  summarize(CO2_Emission_Since_2000 = sum(CO2_Emission))
+ggplot(data = piechartdata, aes(x = "", y = CO2_Emission_Since_2000, fill = Area)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) + # Turns bar chart into a pie chart
+  theme_void() + # Removes background, grid, and axis labels
+  labs(fill = "Area") # Changes the legend title
+#You may also construct a bar chart
+ggplot(data = piechartdata, aes(x = Area, y = CO2_Emission_Since_2000)) +
+  geom_bar(width = 1, stat = "identity") +
+  theme_minimal() +
+  labs(title = "CO2 Emissions since 2000 by Area", x = "Area", y = "CO2 Emissions since 2000")
